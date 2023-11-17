@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:grafik/grafikBatang.dart';
+import 'package:grafik/grafikbatang.dart';
 
-void main() {
+
+void main(){
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

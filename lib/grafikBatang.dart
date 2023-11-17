@@ -49,58 +49,65 @@ class _SalesHistogramState extends State<SalesHistogram> {
       body: Center(
         child: salesData.isEmpty
             ? CircularProgressIndicator()
-            : Container(
+            : Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
                       'Total Penjualan per Bulan',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 20),
-                    Container(
-                      height: 300,
+                    Expanded(
                       child: BarChart(
                         BarChartData(
                           alignment: BarChartAlignment.spaceAround,
-                          maxY: 10,
+                          maxY: salesData
+                              .map((data) => data.totalSales)
+                              .reduce((a, b) => a > b ? a : b)
+                              .toDouble(),
+                          barGroups: salesData
+                              .asMap()
+                              .entries
+                              .map((entry) => BarChartGroupData(
+                                    x: entry.key,
+                                    barRods: [
+                                      BarChartRodData(
+                                        y: entry.value.totalSales.toDouble(),
+                                        colors: [Colors.blue],
+                                      ),
+                                    ],
+                                  ))
+                              .toList(),
                           titlesData: FlTitlesData(
-                            leftTitles: SideTitles(showTitles: false),
+                            leftTitles: SideTitles(
+                              showTitles: false,
+                              margin: 10,
+                            ),
                             rightTitles: SideTitles(showTitles: false),
                             bottomTitles: SideTitles(
                               showTitles: true,
                               margin: 10,
-                              getTitles: (double value) {
-                                int index = value.toInt();
-                                if (index >= 0 && index < salesData.length) {
-                                  return salesData[index].month;
-                                }
-                                return '';
-                              },
+                              getTitles: (value) =>
+                                  salesData[value.toInt()].month,
                             ),
                           ),
-                          borderData: FlBorderData(show: false),
-                          barGroups: salesData
-                              .asMap()
-                              .entries
-                              .map(
-                                (entry) => BarChartGroupData(
-                                  x: entry.key,
-                                  barRods: [
-                                    BarChartRodData(
-                                      y: entry.value.totalSales.toDouble() /
-                                          1000,
-                                      width: 15,
-                                      colors: [Colors.blue],
-                                    ),
-                                  ],
-                                ),
-                              )
-                              .toList(),
+                          axisTitleData: FlAxisTitleData(
+                            bottomTitle: AxisTitle(
+                              showTitle: true,
+                              titleText: '',
+                            ),
+                          ),
+                          borderData: FlBorderData(
+                            border: Border.all(
+                                width:
+                                    0), // Set border width to 0 to remove the border
+                          ),
                         ),
                       ),
                     ),
@@ -110,10 +117,4 @@ class _SalesHistogramState extends State<SalesHistogram> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: SalesHistogram(),
-  ));
 }
